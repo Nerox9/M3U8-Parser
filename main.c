@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     //hls.baseurl.url = "123";
     url = InitURLData("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8");
     hls.baseurl = url;
+    hls.list = CreateList();
 
     #ifdef DEBUG
     printf("URLScheme: %s\n", hls.baseurl.scheme);
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
 
     retCode = get_data(url, &dataStr);
 
-    Parse(dataStr, hls);
+    Parse(dataStr, &hls);
 
     clear_data();
     hls.baseurl.ClearStruct();

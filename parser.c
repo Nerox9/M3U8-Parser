@@ -1,13 +1,14 @@
 #include "parser.h"
 
 void readlines(string);
-int parseLine(string);
+Node* parseLine(string);
 
-int Parse(string data, HLS hls)
+int Parse(string data, HLS* hls)
 {
     int retCode = 0;
     string format = "#EXTM3U";
     string line, temp;
+    Node* node;
 
     // Get the first line and check format in it
     line = strtok_r(data, "\n", &temp);
@@ -25,9 +26,10 @@ int Parse(string data, HLS hls)
 
         do
     {
-        // Get next line
-        line = strtok_r(NULL, "\n", &temp);
-        parseLine(line);
+        // Get next tag, attributes and value
+        line = strtok_r(NULL, "#", &temp);
+        node = parseLine(line);
+        hls->list->Add(hls->list, node);
     }
     while(line != NULL);
     }
@@ -35,15 +37,21 @@ int Parse(string data, HLS hls)
     return retCode;
 }
 
-/* Parse the line */
-int parseLine(string data)
+/* Parse the line to node */
+Node* parseLine(string data)
 {
-    int retCode = 0;
-    string tag, value;
+    Node* node;
+    string tag, attribute, value, rest;
 
-    tag = strtok_r(data, ":", &value);
+    // Parse the each node
+    tag = strtok_r(data, ":", &rest);
+    attribute = strtok_r(NULL, "\n", &rest);
+    value = rest;
+
+    node = CreateNode(tag, attribute, value);
     printf("tag = %s\n", tag);
+    printf("attribute = %s\n", attribute);
     printf("value = %s\n", value);
 
-    return retCode;
+    return node;
 }
