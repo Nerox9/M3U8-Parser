@@ -1,7 +1,7 @@
 CC = gcc
 
 CFLAGS  = -g -Wall
-LDFLAGS = -lcurl
+LIBS = -lcurl
 
 EXECUTABLE = alyo
 TARGET = main.c curl.c
@@ -14,7 +14,7 @@ OBJS := $(TARGET:.c=.o)
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $(EXECUTABLE) $(OBJS) 
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 
 clean:
 	$(RM) $(EXECUTABLE) $(OBJS)

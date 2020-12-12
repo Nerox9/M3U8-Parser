@@ -7,7 +7,6 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-
 typedef char* string;
 
 struct url_data;
