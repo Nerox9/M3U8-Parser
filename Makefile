@@ -2,9 +2,10 @@ CC = gcc
 
 CFLAGS  = -g -Wall
 LIBS = -lcurl
+DEFS = 
 
 EXECUTABLE = alyo
-TARGET = main.c curl.c
+TARGET = main.c curl.c parser.c
 INCLUDES = -I./include
 OBJS := $(TARGET:.c=.o)
 
@@ -13,8 +14,12 @@ OBJS := $(TARGET:.c=.o)
 
 all: $(EXECUTABLE)
 
+debug: DEFS = -DDEBUG
+
+debug: all
+
 $(EXECUTABLE): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXECUTABLE) $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 
 clean:
 	$(RM) $(EXECUTABLE) $(OBJS)

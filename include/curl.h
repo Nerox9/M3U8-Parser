@@ -11,6 +11,6 @@ typedef char* string;
 
 struct url_data;
 size_t write_data(void *, size_t, size_t, struct url_data *);
-int get_data(string url, string* dataOut);
+int get_data(string, string*);
 
 #endif /*__alyo_curl_h__*/

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "include/curl.h"
+#include "curl.h"
+#include "parser.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,6 @@ int main(int argc, char *argv[])
 
     retCode = get_data("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8", &dataStr);
 
-    printf("Data: %s\n", dataStr);
+    printf("Data: \n%s\n", dataStr);
     return retCode;
 }

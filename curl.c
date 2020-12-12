@@ -5,6 +5,7 @@ struct url_data {
     string data;
 };
 
+/* Write callback */
 size_t write_data(void *ptr, size_t size, size_t nmemb, struct url_data *data) 
 {
     size_t index = data->size;
@@ -13,7 +14,9 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, struct url_data *data)
 
     data->size += (size * nmemb);
 
+#ifdef DEBUG
     fprintf(stderr, "data at %p size=%ld nmemb=%ld\n", ptr, size, nmemb);
+#endif
 
     tmp = realloc(data->data, data->size + 1);
 
