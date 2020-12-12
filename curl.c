@@ -5,6 +5,8 @@ struct url_data {
     string data;
 };
 
+struct url_data* url_data_ptr;
+
 /* Write callback */
 size_t write_data(void *ptr, size_t size, size_t nmemb, struct url_data *data) 
 {
@@ -44,6 +46,8 @@ int get_data(string url, string* dataOut)
     int retCode = 0;
     
     struct url_data data;
+    url_data_ptr = &data;
+
     data.size = 0;
     data.data = malloc(4096); /* initial buffer */
 
@@ -84,4 +88,9 @@ int get_data(string url, string* dataOut)
     }
     
     return retCode;
+}
+
+void clear_data()
+{
+    free(url_data_ptr->data);
 }

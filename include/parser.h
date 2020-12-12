@@ -3,9 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef char* string;
-struct HLS;
+struct HLS
+{
+    char* baseurl; 
+};
 
 int Parse(string, struct HLS);
 

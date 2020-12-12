@@ -10,16 +10,16 @@ INCLUDES = -I./include
 OBJS := $(TARGET:.c=.o)
 
 .c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -c $< -o $@
 
 all: $(EXECUTABLE)
 
-debug: DEFS = -DDEBUG
+debug: DEFS=-DDEBUG
 
 debug: all
 
 $(EXECUTABLE): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -o $(EXECUTABLE) $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 
 clean:
 	$(RM) $(EXECUTABLE) $(OBJS)
