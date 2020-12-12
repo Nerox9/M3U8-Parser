@@ -7,11 +7,13 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
+#include "url.h"
+
 typedef char* string;
 
-struct url_data;
-size_t write_data(void *, size_t, size_t, struct url_data *);
-int get_data(string, string*);
+struct ResponseData;
+size_t write_data(void *, size_t, size_t, struct ResponseData *);
+int get_data(URLData, string*);
 void clear_data();
 
 #endif /*__alyo_curl_h__*/

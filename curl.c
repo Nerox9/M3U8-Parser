@@ -1,14 +1,14 @@
 #include "curl.h"
 
-struct url_data {
+struct ResponseData {
     size_t size;
     string data;
 };
 
-struct url_data* url_data_ptr;
+struct ResponseData* responseData_ptr;
 
 /* Write callback */
-size_t write_data(void *ptr, size_t size, size_t nmemb, struct url_data *data) 
+size_t write_data(void *ptr, size_t size, size_t nmemb, struct ResponseData *data) 
 {
     size_t index = data->size;
     size_t n = (size * nmemb);
@@ -39,21 +39,21 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, struct url_data *data)
 }
 
 
-int get_data(string url, string* dataOut)
+int get_data(URLData url, string* dataOut)
 {
     CURL *curl;
     CURLcode res;
     int retCode = 0;
     
-    struct url_data data;
-    url_data_ptr = &data;
+    struct ResponseData data;
+    responseData_ptr = &data;
 
     data.size = 0;
     data.data = malloc(4096); /* initial buffer */
 
     if(NULL == data.data) {
         fprintf(stderr, "Failed to allocate memory.\n");
-        retCode = -3;
+        retCode = -3; // Memory Allocation Error
     }
 
     data.data[0] = '\0';
@@ -63,7 +63,7 @@ int get_data(string url, string* dataOut)
     if (curl)
     {
         // Set curl options
-        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_URL, *(url.url));
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);   // get output as string
@@ -74,7 +74,7 @@ int get_data(string url, string* dataOut)
         if(res != CURLE_OK) 
         {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-            retCode = -2;
+            retCode = -2; // CURL Download Error
         }
         
         *dataOut = data.data;
@@ -84,7 +84,7 @@ int get_data(string url, string* dataOut)
     else
     {
         fprintf(stderr, "curl_easy_init failed.\n");
-            retCode = -1;
+            retCode = -1; // CURL İnitialize Error
     }
     
     return retCode;
@@ -92,5 +92,7 @@ int get_data(string url, string* dataOut)
 
 void clear_data()
 {
-    free(url_data_ptr->data);
+    printf("Clear CURL data\n");
+    free(responseData_ptr->data);
+    printf("Clear CURL data\n");
 }

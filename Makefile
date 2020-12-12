@@ -5,7 +5,7 @@ LIBS = -lcurl
 DEFS = 
 
 EXECUTABLE = alyo
-TARGET = main.c curl.c parser.c
+TARGET = main.c curl.c parser.c url.c
 INCLUDES = -I./include
 OBJS := $(TARGET:.c=.o)
 

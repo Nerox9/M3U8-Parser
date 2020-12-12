@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "parser.h"
+#include "url.h"
 
 typedef char* string;
-struct HLS
+typedef struct HLS
 {
-    char* baseurl; 
-};
+    URLData baseurl; 
+} HLS;
 
-int Parse(string, struct HLS);
+int Parse(string, HLS);
 
 #endif /* __alyo_parser__ */
