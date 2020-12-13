@@ -12,13 +12,13 @@ typedef struct URLData {
     string scheme;
     string netloc;
     string path;
-    void (*ClearStruct)();
-    string (*GetURL)();
+    void (*DeleteURLData)(struct URLData*);
+    string (*GetURL)(struct URLData*);
     void (*SetURL)(struct URLData*, string);
 } URLData;
 
 URLData* InitURLData(const string);
-string GetURL();
+string GetURL(URLData *);
 void SetURL(URLData *, string);
 
 #endif

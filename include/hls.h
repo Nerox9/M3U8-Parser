@@ -9,8 +9,11 @@ typedef struct HLS
 {
     URLData* baseurl;
     List* list;
+    void (*DeleteHLS)(struct HLS*);
+    int (*Process)(struct HLS*);
 } HLS;
 
 HLS* CreateHLS();
+void DeleteHLS(HLS*);
 
 #endif /* __alyo_hls_h__ */

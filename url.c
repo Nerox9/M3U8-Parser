@@ -1,13 +1,13 @@
 #include "url.h"
 
 int ParseURL(URLData*);
-void ClearStruct();
+void DeleteURLData(URLData*);
 
 URLData* InitURLData(const string url)
 {
     URLData* urlData = (URLData*) malloc(sizeof(URLData));
 
-    urlData->ClearStruct = &ClearStruct;
+    urlData->DeleteURLData = &DeleteURLData;
     urlData->url = url;
     ParseURL(urlData);
     urlData->GetURL = &GetURL;
@@ -54,18 +54,20 @@ int ParseURL(URLData* self)
     return retCode;
 }
 
-void ClearStruct(URLData* self)
+void DeleteURLData(URLData* self)
 {
     printf("Clear URL");
-    free(self->url);
-    free(self->scheme);
     free(self->netloc);
     free(self->path);
+    free(self->scheme);
+    free(self->url);
+    
+    free(self);
 }
 
-string GetURL()
+string GetURL(URLData *self)
 {
-    return "GetTest";
+    return self->url;
 }
 
 void SetURL(URLData *self, const string url)

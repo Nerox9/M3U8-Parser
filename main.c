@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
          node = node->next;
     }
 
-    clear_data();
-    hls->baseurl->ClearStruct();
+    printf("\nREMOVE EVERYTHING!!!\n");
+    //clear_data();
+    hls->DeleteHLS(hls);
     return retCode;
 }

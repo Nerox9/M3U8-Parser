@@ -16,6 +16,7 @@ List* CreateList()
     List* list = (List*) malloc(sizeof(List));
     list->length = 0;
     list->Add = &Add;
+    list->DeleteList = &DeleteList;
 
     return list;
 }
@@ -45,10 +46,18 @@ int Add(List* self, Node* node)
 
 void DeleteNode(Node* self)
 {
-    // TODO
+    free(self);
 }
 
-void DeleteList()
+void DeleteList(List* self)
 {
-    // TODO
+    Node* head = self->head;
+    Node* temp;
+
+    while(head != NULL)
+    {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
 }

@@ -20,10 +20,12 @@ typedef struct List
     Node* last;
     unsigned int length;
     int (*Add)(struct List*, Node*); 
+    void (*DeleteList)(struct List*);
 } List;
 
 Node* CreateNode(string, string, string);
 List* CreateList();
 int Add(List*, Node*);
+void DeleteList(List*);
 
 #endif /* __alyo_list_h__ */
