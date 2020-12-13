@@ -1,6 +1,7 @@
 #include "url.h"
 
 int ParseURL(URLData*);
+string GetBaseURL();
 void DeleteURLData(URLData*);
 
 URLData* InitURLData(const string url)
@@ -9,6 +10,7 @@ URLData* InitURLData(const string url)
 
     urlData->DeleteURLData = &DeleteURLData;
     urlData->url = url;
+    urlData->baseurl = GetBaseURL(url);
     ParseURL(urlData);
     urlData->GetURL = &GetURL;
     urlData->SetURL = &SetURL;
@@ -22,12 +24,9 @@ int ParseURL(URLData* self)
     string temp;
     string p;
     string rest;
-    unsigned int pathLen;
-    string endToken;
-    char* pEndToken;
     
-    temp = malloc((strlen(self->url) + 1) * sizeof(char));
-    memcpy(temp, self->url, strlen(self->url) + 1);
+    temp = malloc((strlen(self->baseurl) + 1) * sizeof(char));
+    memcpy(temp, self->baseurl, strlen(self->baseurl) + 1);
 
     p = strtok_r(temp, "://", &rest);
     if(p == NULL)
@@ -41,17 +40,38 @@ int ParseURL(URLData* self)
     else
         self->netloc = p;
 
-    endToken = strrchr(rest, '/');
-    pathLen = strlen(rest) - strlen(endToken); // this could be efficient however it doesnt work and i passed
-    if(endToken != NULL)
-    {
-        self->path = malloc((pathLen + 1) * sizeof(char));
-        memcpy(self->path, rest, pathLen + 1);
-        pEndToken = self->path + pathLen + 1;
-        *pEndToken = '\0';
-    }
+    self->path = rest;
 
     return retCode;
+}
+
+string GetBaseURL(string url)
+{
+    unsigned int pathLen;
+    string endToken;
+    char* pEndToken;
+    string baseURL;
+
+    endToken = strrchr(url, '/');
+    pathLen = strlen(url) - strlen(endToken);
+    if(endToken != NULL)
+    {
+        baseURL = malloc((pathLen + 1) * sizeof(char));
+        memcpy(baseURL, url, pathLen + 1);
+        pEndToken = baseURL + pathLen + 1;
+        *pEndToken = '\0';
+    }
+    return baseURL;
+}
+
+string GetURL(URLData *self)
+{
+    return self->url;
+}
+
+void SetURL(URLData *self, const string url)
+{
+    self->url = url;
 }
 
 void DeleteURLData(URLData* self)
@@ -63,14 +83,4 @@ void DeleteURLData(URLData* self)
     free(self->url);
     
     free(self);
-}
-
-string GetURL(URLData *self)
-{
-    return self->url;
-}
-
-void SetURL(URLData *self, const string url)
-{
-    self->url = url;
 }

@@ -9,6 +9,7 @@ typedef char* string;
 
 typedef struct URLData {
     string url;
+    string baseurl;
     string scheme;
     string netloc;
     string path;

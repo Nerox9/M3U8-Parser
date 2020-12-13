@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     HLS* hls;
 
     hls = CreateHLS();
-    url = InitURLData("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8");
+    url = InitURLData("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/v5/prog_index.m3u8");
     hls->baseurl = url;
     hls->list = CreateList();
 
@@ -27,14 +27,8 @@ int main(int argc, char *argv[])
 
     retCode = get_data(&hls->baseurl->url, &dataStr);
 
-    Parse(dataStr, hls);
-
-    Node* node = hls->list->head;
-    for(int i = 0; i < hls->list->length; i++)
-    {
-         printf("INPUT: %s --- %s --- %s\n", node->tag, node->attribute, node->value);
-         node = node->next;
-    }
+    retCode = Parse(dataStr, hls);
+    retCode = hls->Process(hls);
 
     printf("\nREMOVE EVERYTHING!!!\n");
     //clear_data();

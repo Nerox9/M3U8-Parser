@@ -38,6 +38,12 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, struct ResponseData *dat
     return size * nmemb;
 }
 
+/* write file callback */
+size_t write_file_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
+
 
 int get_data(string* url, string* dataOut)
 {
@@ -78,6 +84,43 @@ int get_data(string* url, string* dataOut)
         }
         
         *dataOut = data.data;
+        curl_easy_cleanup(curl);
+    }
+
+    else
+    {
+        fprintf(stderr, "curl_easy_init failed.\n");
+            retCode = -1; // CURL İnitialize Error
+    }
+    
+    return retCode;
+}
+
+int downloadFile(string* url, string filepath)
+{
+    CURL *curl;
+    CURLcode res;
+    int retCode = 0;
+
+    FILE* file = fopen(filepath, "w");
+
+	curl = curl_easy_init();
+    if (curl)
+    {
+        // Set curl options
+        curl_easy_setopt(curl, CURLOPT_URL, *url);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_file_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);   // get output file
+
+        res = curl_easy_perform(curl);
+
+        // Check curl perform
+        if(res != CURLE_OK) 
+        {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+            retCode = -2; // CURL Download Error
+        }
         curl_easy_cleanup(curl);
     }
 
