@@ -3,15 +3,15 @@
 int ParseURL(URLData*);
 void ClearStruct();
 
-URLData InitURLData(const string url)
+URLData* InitURLData(const string url)
 {
-    URLData urlData;
+    URLData* urlData = (URLData*) malloc(sizeof(URLData));
 
-    urlData.ClearStruct = &ClearStruct;
-    urlData.url = &url;
-    ParseURL(&urlData);
-    urlData.GetURL = &GetURL;
-    urlData.SetURL = &SetURL;
+    urlData->ClearStruct = &ClearStruct;
+    urlData->url = url;
+    ParseURL(urlData);
+    urlData->GetURL = &GetURL;
+    urlData->SetURL = &SetURL;
 
     return urlData;
 }
@@ -26,8 +26,8 @@ int ParseURL(URLData* self)
     string endToken;
     char* pEndToken;
     
-    temp = malloc((strlen(*(self->url)) + 1) * sizeof(char));
-    memcpy(temp, *(self->url), strlen(*(self->url)) + 1);
+    temp = malloc((strlen(self->url) + 1) * sizeof(char));
+    memcpy(temp, self->url, strlen(self->url) + 1);
 
     p = strtok_r(temp, "://", &rest);
     if(p == NULL)
@@ -48,7 +48,7 @@ int ParseURL(URLData* self)
         self->path = malloc((pathLen + 1) * sizeof(char));
         memcpy(self->path, rest, pathLen + 1);
         pEndToken = self->path + pathLen + 1;
-        *pEndToken = NULL;
+        *pEndToken = '\0';
     }
 
     return retCode;
@@ -57,7 +57,7 @@ int ParseURL(URLData* self)
 void ClearStruct(URLData* self)
 {
     printf("Clear URL");
-    free(*self->url);
+    free(self->url);
     free(self->scheme);
     free(self->netloc);
     free(self->path);
@@ -70,5 +70,5 @@ string GetURL()
 
 void SetURL(URLData *self, const string url)
 {
-    self->url = &url;
+    self->url = url;
 }

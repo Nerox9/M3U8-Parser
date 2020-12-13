@@ -24,14 +24,16 @@ int Parse(string data, HLS* hls)
         printf("Format = %s\n", format);
         #endif /* DEBUG */
 
-        do
-    {
-        // Get next tag, attributes and value
+        // Get first line
         line = strtok_r(NULL, "#", &temp);
-        node = parseLine(line);
-        hls->list->Add(hls->list, node);
-    }
-    while(line != NULL);
+        do
+        {
+            node = parseLine(line);
+            hls->list->Add(hls->list, node);
+            // Get next tag, attributes and value
+            line = strtok_r(NULL, "#", &temp);
+        }
+        while(line != NULL);
     }
     
     return retCode;
@@ -45,13 +47,17 @@ Node* parseLine(string data)
 
     // Parse the each node
     tag = strtok_r(data, ":", &rest);
+    tag = strtok(tag, "\n");
     attribute = strtok_r(NULL, "\n", &rest);
+    rest = strtok(rest, "\n");
     value = rest;
 
     node = CreateNode(tag, attribute, value);
+    #ifdef DEBUG
     printf("tag = %s\n", tag);
     printf("attribute = %s\n", attribute);
     printf("value = %s\n", value);
+    #endif /* DEBUG */
 
     return node;
 }

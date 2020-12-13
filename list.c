@@ -13,7 +13,8 @@ Node* CreateNode(string tag, string attribute, string value)
 
 List* CreateList()
 {
-    List* list = malloc(sizeof(List));
+    List* list = (List*) malloc(sizeof(List));
+    list->length = 0;
     list->Add = &Add;
 
     return list;
@@ -23,16 +24,21 @@ int Add(List* self, Node* node)
 {
     int retCode = 0;
 
-    
-    if(self->last == NULL)
-        self->head = node;
+    if (self == NULL)
+        retCode = -1;
+    else if(node == NULL)
+        retCode = -2;
     else
-        self->last->next = node;
+    {
+        if(self->last == NULL)
+            self->head = node;
+        else
+            self->last->next = node;
 
-    self->last = node;
-    self->last->next = NULL;
-
-    // TODO: check
+        self->last = node;
+        self->last->next = NULL;
+        self->length++;
+    }
 
     return retCode;
 }

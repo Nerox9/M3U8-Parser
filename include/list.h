@@ -18,6 +18,7 @@ typedef struct List
 {
     Node* head;
     Node* last;
+    unsigned int length;
     int (*Add)(struct List*, Node*); 
 } List;
 

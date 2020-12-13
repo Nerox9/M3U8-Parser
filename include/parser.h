@@ -7,13 +7,7 @@
 #include "parser.h"
 #include "url.h"
 #include "list.h"
-
-typedef char* string;
-typedef struct HLS
-{
-    URLData baseurl;
-    List* list;
-} HLS;
+#include "hls.h"
 
 int Parse(string, HLS*);
 

@@ -39,7 +39,7 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, struct ResponseData *dat
 }
 
 
-int get_data(URLData url, string* dataOut)
+int get_data(string* url, string* dataOut)
 {
     CURL *curl;
     CURLcode res;
@@ -63,7 +63,7 @@ int get_data(URLData url, string* dataOut)
     if (curl)
     {
         // Set curl options
-        curl_easy_setopt(curl, CURLOPT_URL, *(url.url));
+        curl_easy_setopt(curl, CURLOPT_URL, *url);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);   // get output as string

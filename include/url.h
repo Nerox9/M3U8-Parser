@@ -8,7 +8,7 @@
 typedef char* string;
 
 typedef struct URLData {
-    string* url;
+    string url;
     string scheme;
     string netloc;
     string path;
@@ -17,7 +17,7 @@ typedef struct URLData {
     void (*SetURL)(struct URLData*, string);
 } URLData;
 
-URLData InitURLData(const string);
+URLData* InitURLData(const string);
 string GetURL();
 void SetURL(URLData *, string);
 
