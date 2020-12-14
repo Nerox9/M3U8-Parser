@@ -3,17 +3,21 @@ CC = gcc
 CFLAGS  = -g -Wall
 LIBS = -lcurl
 DEFS = 
+SRCDIR = src
+OBJDIR = obj
 
 EXECUTABLE = alyo
-TARGET = main.c curl.c parser.c url.c list.c hls.c
-INCLUDES = -I./include
-OBJS := $(TARGET:.c=.o)
 
-.c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -c $< -o $@
+SRCS = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCS))
+INCLUDES = -I./include
+	
+%.o:
+	@mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFS) -c $(@:$(OBJDIR)/%.o=$(SRCDIR)/%.c) -o $@
 
 all: $(EXECUTABLE)
-
+	
 debug: DEFS=-DDEBUG
 
 debug: all
