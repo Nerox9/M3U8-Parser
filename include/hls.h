@@ -17,7 +17,7 @@ typedef struct HLS
     URLData* baseurl;
     List* list;
     void (*DeleteHLS)(struct HLS*);
-    int (*Process)(struct HLS*);
+    int (*Process)(struct HLS*, string);
 
     int version;
     char segmentsDependent;

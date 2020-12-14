@@ -1,10 +1,11 @@
 #include "hls.h"
 
-int Process(HLS*);
-int processXBitrate(HLS*, Node*);
+int Process(HLS*, string);
+int processXBitrate(HLS*, Node*, string);
 int processXStreamInf(HLS*, Node*);
 int processXIFrameStreamInf(HLS*, Node*);
 int processXMedia(HLS*, Node*);
+string getAttrib(string, string, string);
 
 HLS* CreateHLS()
 {
@@ -35,7 +36,7 @@ void DeleteHLS(HLS* self)
     free(self);
 }
 
-int Process(HLS* self)
+int Process(HLS* self, string out)
 {
     int retCode = 0;
 
@@ -53,7 +54,7 @@ int Process(HLS* self)
             self->segmentsDependent = 0;
 
         if (strstr(EXT_X_BITRATE, node->tag) != NULL)
-            processXBitrate(self, node);
+            processXBitrate(self, node, out);
 
         if (strstr(EXT_X_ENDLIST, node->tag) != NULL)
             // TODO finish all
@@ -76,17 +77,27 @@ int Process(HLS* self)
     return retCode;
 }
 
-int processXBitrate(HLS* self, Node* node)
+int processXBitrate(HLS* self, Node* node, string out)
 {
     int retCode = 0;
+    int urlLength = 0;
+    string url = NULL;
     struct stat sb;
     string filepath;
+    string temp;
 
-    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength * sizeof(char));
-    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+    
+    // Check the node value is filename or whole url
+    if (strlen(self->baseurl->baseurl) + strlen(node->value) != strlen(self->baseurl->url))
+    {
+        urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
+        url = (string)malloc(urlLength * sizeof(char));
+        memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
-    strcat(url, node->value);
+        
+        strcat(url, node->value);
+    }
+
     #ifdef DEBUG
     printf("Download: %s\n", url);
     #endif /* DEBUG */
@@ -95,12 +106,29 @@ int processXBitrate(HLS* self, Node* node)
     // If tempdir exists
     if (stat(self->tempDir, &sb) == 0 && S_ISDIR(sb.st_mode)) 
     {
-        filepath = (string)malloc((strlen(self->tempDir) + strlen(node->value) + 1) * sizeof(char));
-        strncpy(filepath, self->tempDir, strlen(self->tempDir) + 1);
-        strcat(filepath, node->value);
+        // If Value is filename
+        if (url != NULL)
+        {
+            filepath = (string)malloc((strlen(self->tempDir) + strlen(node->value) + 1) * sizeof(char));
+            strncpy(filepath, self->tempDir, strlen(self->tempDir) + 1);
+            strcat(filepath, node->value);
 
-        // Download to temp folder
-        retCode = downloadFile(&url, filepath);
+            // Download to temp folder
+            retCode = downloadFile(&url, filepath);
+        }
+        else
+        {
+            temp = strrchr(node->value, '/');
+
+            filepath = (string)malloc((strlen(self->tempDir) + strlen(temp+1) + 1) * sizeof(char));
+            strncpy(filepath, self->tempDir, strlen(self->tempDir) + 1);
+            strcat(filepath, temp+1);
+            
+            // Download to temp folder
+            retCode = downloadFile(&(node->value), filepath);
+        }
+
+        
     }
     else
     {
@@ -113,10 +141,8 @@ int processXBitrate(HLS* self, Node* node)
     // Add to output
     if(retCode == 0)
 	{
-        // TODO: get name from main
-		string output = "output";
-		string command = (string)malloc(sizeof(char) * (strlen(output) + strlen(filepath) + 9));
-		sprintf(command, "cat %s >> %s", filepath, output); 
+		string command = (string)malloc(sizeof(char) * (strlen(out) + strlen(filepath) + 9));
+		sprintf(command, "cat %s >> %s", filepath, out); 
 		system(command);
 	}
 
@@ -126,12 +152,20 @@ int processXBitrate(HLS* self, Node* node)
 int processXStreamInf(HLS* self, Node* node)
 {
     int retCode = 0;
+    int urlLength = 0;
+    string url = NULL;
+    
+    // Check the node value is filename or whole url
+    if (strlen(self->baseurl->baseurl) + strlen(node->value) != strlen(self->baseurl->url))
+    {
+        urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
+        url = (string)malloc(urlLength * sizeof(char));
+        memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
-    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength * sizeof(char));
-    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+        
+        strcat(url, node->value);
+    }
 
-    strcat(url, node->value);
     #ifdef DEBUG
     printf("Stream: %s\n", url);
     #endif /* DEBUG */
@@ -140,6 +174,9 @@ int processXStreamInf(HLS* self, Node* node)
     if(retCode == 0)
 	{
         Node* tempNode = node->Copy(node);
+        // IF value is just filename, set it to whole url
+        if(url != NULL)
+            tempNode->value = url;
 		self->variantStreams->Add(self->variantStreams, tempNode);
 	}
 
@@ -149,12 +186,20 @@ int processXStreamInf(HLS* self, Node* node)
 int processXIFrameStreamInf(HLS* self, Node* node)
 {
     int retCode = 0;
+    int urlLength = 0;
+    string url = NULL;
+    
+    // Check the node value is filename or whole url
+    if (strlen(self->baseurl->baseurl) + strlen(node->value) != strlen(self->baseurl->url))
+    {
+        urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
+        url = (string)malloc(urlLength * sizeof(char));
+        memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
-    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength * sizeof(char));
-    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+        
+        strcat(url, node->value);
+    }
 
-    strcat(url, node->value);
     #ifdef DEBUG
     printf("I Frame Stream: %s\n", url);
     #endif /* DEBUG */
@@ -163,6 +208,10 @@ int processXIFrameStreamInf(HLS* self, Node* node)
     if(retCode == 0)
 	{
         Node* tempNode = node->Copy(node);
+
+        // IF value is just filename, set it to whole url
+        if(url != NULL)
+            tempNode->value = url;
 		self->iFrameStreams->Add(self->iFrameStreams, tempNode);
 	}
 
@@ -172,12 +221,28 @@ int processXIFrameStreamInf(HLS* self, Node* node)
 int processXMedia(HLS* self, Node* node)
 {
     int retCode = 0;
+    int urlLength;
+    string attribute;
+    string url = NULL;
+    string filename;
+    string type;
 
-    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength * sizeof(char));
+    // Copy Attribute
+    attribute = (string)malloc(strlen(node->attribute) * sizeof(char));
+    memcpy(attribute, node->attribute, strlen(node->attribute) + 1);
+
+    // Get TYPE
+    type = getAttrib(attribute, "TYPE=", ",");
+
+    if(strstr(type, "AUDIO") != NULL)
+        // Get URI
+        filename = getAttrib(attribute, "URI=\"", "\"");
+
+    urlLength = strlen(self->baseurl->baseurl) + strlen(filename) + 1;
+    url = (string)malloc(urlLength * sizeof(char));
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+    strcat(url, filename);
 
-    strcat(url, node->value);
     #ifdef DEBUG
     printf("Media: %s\n", url);
     #endif /* DEBUG */
@@ -185,9 +250,24 @@ int processXMedia(HLS* self, Node* node)
     // Add to playlist
     if(retCode == 0)
 	{
+        node->value = url;
         Node* tempNode = node->Copy(node);
 		self->media->Add(self->media, tempNode);
 	}
 
     return retCode;
+}
+
+string getAttrib(string attribs, string attribtag, string endToken)
+{
+    string temp, rest;
+    int tagLen = 0;
+    
+    temp = (string)malloc((strlen(attribs) + 1) * sizeof(char));
+    memcpy(temp, attribs, strlen(attribs) + 1);
+    tagLen = strlen(attribtag);
+    temp = strstr(temp, attribtag);
+    temp += tagLen;
+    strtok_r(temp, endToken, &rest);
+    return temp;
 }
