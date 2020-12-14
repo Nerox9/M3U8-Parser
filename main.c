@@ -29,6 +29,20 @@ int main(int argc, char *argv[])
 
     retCode = Parse(dataStr, hls);
     retCode = hls->Process(hls);
+	
+	Node* node = hls->variantStreams->head;
+	for(int i = 0; i < hls->variantStreams->length; i++)
+	{
+		printf("%s\n", node->value);
+		node = node->next;
+	}
+	
+	Node* node = hls->iFrameStreams->head;
+	for(int i = 0; i < hls->iFrameStreams->length; i++)
+	{
+		printf("%s\n", node->value);
+		node = node->next;
+	}
 
     printf("\nREMOVE EVERYTHING!!!\n");
     //clear_data();

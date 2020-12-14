@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef char* string;
 
@@ -12,6 +13,8 @@ typedef struct Node
     string attribute;
     string value;
     struct Node* next; 
+
+    struct Node* (*Copy)(struct Node*);
 } Node; 
 
 typedef struct List 

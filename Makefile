@@ -21,7 +21,7 @@ all: $(EXECUTABLE)
 debug: DEFS=-DDEBUG
 
 debug: all
-
+	
 $(EXECUTABLE): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 

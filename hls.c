@@ -2,6 +2,9 @@
 
 int Process(HLS*);
 int processXBitrate(HLS*, Node*);
+int processXStreamInf(HLS*, Node*);
+int processXIFrameStreamInf(HLS*, Node*);
+int processXMedia(HLS*, Node*);
 
 HLS* CreateHLS()
 {
@@ -14,10 +17,11 @@ HLS* CreateHLS()
 
     hls->variantStreams = CreateList();
     hls->iFrameStreams = CreateList();
-    hls->segments = CreateList();
+	self->media = CreateList();
 
 	hls->tempFolderCreated = 0;
-    hls->tempDir = "./m3u8_temp/";
+    char template[] = "/tmp/tempdirXXXXX";
+    hls->tempDir = mkdtemp(template);
     return hls;
 }
 
@@ -30,8 +34,7 @@ void DeleteHLS(HLS* self)
 		sprintf(delCommand, "rm -r %s", self->tempDir); 
 		system(delCommand);
 	}
-    self->baseurl->DeleteURLData(self->baseurl);
-    self->segments = CreateList();
+    self->baseurl->DeleteURLData(self->baseurl);    
     //self->list->DeleteList(self->list);
     free(self);
 }
@@ -45,10 +48,6 @@ int Process(HLS* self)
     // Check and create download temp folder
     if (stat(self->tempDir, &buf) == -1) 
     {
-        folderRet = mkdir(self->tempDir, 0700); 
-		self->tempFolderCreated = 1;
-
-
         // I don't like this type indented style however
         // it has to one exit point
         if(folderRet == 0)
@@ -70,8 +69,18 @@ int Process(HLS* self)
                     processXBitrate(self, node);
 
                 if (strstr(EXT_X_ENDLIST, node->tag) != NULL)
-                    mergeFiles(self);
+                    // TODO finish all
+                    printf("List Ended");
 
+                if (strstr(EXT_X_STREAM_INF, node->tag) != NULL)
+                    processXStreamInf(self, node);
+				
+				if (strstr(EXT_X_STREAM_INF, node->tag) != NULL)
+                    processXIFrameStreamInf(self, node);
+				
+				if (strstr(EXT_X_MEDIA, node->tag) != NULL)
+                    processXMedia(self, node);
+					
 
                 // Get next node
                 node = node->next;
@@ -95,7 +104,7 @@ int Process(HLS* self)
 int processXBitrate(HLS* self, Node* node)
 {
     int retCode = 0;
-    //Node* tempNode = (Node*)malloc(sizeof(Node));
+
     int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
     string url = (string)malloc(urlLength);
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
@@ -115,10 +124,80 @@ int processXBitrate(HLS* self, Node* node)
     // Add to output
     if(retCode == 0)
 	{
+        // TODO: get name from main
 		string output = "output";
 		string command = (string)malloc(sizeof(char) * (strlen(output) + strlen(filepath) + 9));
 		sprintf(command, "cat %s >> %s", filepath, output); 
 		system(command);
+	}
+
+    return retCode;
+}
+
+int processXStreamInf(HLS* self, Node* node)
+{
+    int retCode = 0;
+
+    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
+    string url = (string)malloc(urlLength);
+    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+
+    strcat(url, node->value);
+    #ifdef DEBUG
+    printf("Stream: %s\n", url);
+    #endif /* DEBUG */
+
+    // Add to playlist
+    if(retCode == 0)
+	{
+        Node* tempNode = node->Copy(node);
+		self->variantStreams->Add(self->variantStreams, tempNode);
+	}
+
+    return retCode;
+}
+
+int processXIFrameStreamInf(HLS* self, Node* node)
+{
+    int retCode = 0;
+
+    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
+    string url = (string)malloc(urlLength);
+    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+
+    strcat(url, node->value);
+    #ifdef DEBUG
+    printf("I Frame Stream: %s\n", url);
+    #endif /* DEBUG */
+
+    // Add to playlist
+    if(retCode == 0)
+	{
+        Node* tempNode = node->Copy(node);
+		self->iFrameStreams->Add(self->iFrameStreams, tempNode);
+	}
+
+    return retCode;
+}
+
+int processXMedia(HLS* self, Node* node)
+{
+    int retCode = 0;
+
+    int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
+    string url = (string)malloc(urlLength);
+    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+
+    strcat(url, node->value);
+    #ifdef DEBUG
+    printf("Media: %s\n", url);
+    #endif /* DEBUG */
+
+    // Add to playlist
+    if(retCode == 0)
+	{
+        Node* tempNode = node->Copy(node);
+		self->media->Add(self->media, tempNode);
 	}
 
     return retCode;

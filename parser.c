@@ -49,8 +49,7 @@ Node* parseLine(string data)
     tag = strtok_r(data, ":", &rest);
     tag = strtok(tag, "\n");
     attribute = strtok_r(NULL, "\n", &rest);
-    rest = strtok(rest, "\n");
-    value = rest;
+    value = strtok_r(NULL, "\n", &rest);
 
     node = CreateNode(tag, attribute, value);
     #ifdef DEBUG
