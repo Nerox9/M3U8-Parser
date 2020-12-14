@@ -52,9 +52,9 @@ Node* Copy(Node* self)
 {
     Node* newNode = (Node*)malloc(sizeof(Node));
 
-    string tag = (string)malloc(strlen(self->tag) + 1);
-    string attribute = (string)malloc(strlen(self->attribute) + 1);
-    string value = (string)malloc(strlen(self->value) + 1);
+    string tag = (string)malloc((strlen(self->tag) + 1) * sizeof(char));
+    string attribute = (string)malloc((strlen(self->attribute) + 1)* sizeof(char));
+    string value = (string)malloc((strlen(self->value) + 1)* sizeof(char));
 
     memcpy(tag, self->tag, strlen(self->tag) + 1);
     memcpy(attribute, self->attribute, strlen(self->attribute) + 1);

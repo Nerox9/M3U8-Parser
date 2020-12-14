@@ -1,7 +1,7 @@
 #include "url.h"
 
 int ParseURL(URLData*);
-string GetBaseURL();
+string GetBaseURL(string);
 void DeleteURLData(URLData*);
 
 URLData* InitURLData(const string url)
@@ -25,7 +25,7 @@ int ParseURL(URLData* self)
     string p;
     string rest;
     
-    temp = malloc((strlen(self->baseurl) + 1) * sizeof(char));
+    temp = (string)malloc((strlen(self->baseurl) + 1) * sizeof(char));
     memcpy(temp, self->baseurl, strlen(self->baseurl) + 1);
 
     p = strtok_r(temp, "://", &rest);
@@ -49,17 +49,15 @@ string GetBaseURL(string url)
 {
     unsigned int pathLen;
     string endToken;
-    char* pEndToken;
     string baseURL;
 
     endToken = strrchr(url, '/');
     pathLen = strlen(url) - strlen(endToken);
     if(endToken != NULL)
     {
-        baseURL = malloc((pathLen + 1) * sizeof(char));
+        baseURL = (string)malloc(pathLen + 1);
+        memset(baseURL, '\0', pathLen + 1);
         memcpy(baseURL, url, pathLen + 1);
-        pEndToken = baseURL + pathLen + 1;
-        *pEndToken = '\0';
     }
     return baseURL;
 }

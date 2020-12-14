@@ -13,8 +13,9 @@ int main(int argc, char *argv[])
     URLData* url;
     HLS* hls;
 
-    hls = CreateHLS();
     url = InitURLData("https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/v5/prog_index.m3u8");
+    hls = CreateHLS();
+    
     hls->baseurl = url;
     hls->list = CreateList();
 
@@ -37,11 +38,11 @@ int main(int argc, char *argv[])
 		node = node->next;
 	}
 	
-	Node* node = hls->iFrameStreams->head;
+	Node* tempNode = hls->iFrameStreams->head;
 	for(int i = 0; i < hls->iFrameStreams->length; i++)
 	{
-		printf("%s\n", node->value);
-		node = node->next;
+		printf("%s\n", tempNode->value);
+		tempNode = tempNode->next;
 	}
 
     printf("\nREMOVE EVERYTHING!!!\n");

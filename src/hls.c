@@ -17,10 +17,10 @@ HLS* CreateHLS()
 
     hls->variantStreams = CreateList();
     hls->iFrameStreams = CreateList();
-	self->media = CreateList();
-
-	hls->tempFolderCreated = 0;
-    char template[] = "/tmp/tempdirXXXXX";
+	hls->media = CreateList();
+    
+    string template = (string)malloc(19 * sizeof(char));
+	strncpy(template, "/tmp/tempdirXXXXXX", 19);
     hls->tempDir = mkdtemp(template);
     return hls;
 }
@@ -28,12 +28,8 @@ HLS* CreateHLS()
 void DeleteHLS(HLS* self)
 {
     // Remove temp folder
-	if(self->tempFolderCreated)
-	{
-		string delCommand = (string)malloc(strlen(self->tempDir) + 6);
-		sprintf(delCommand, "rm -r %s", self->tempDir); 
-		system(delCommand);
-	}
+    rmdir(self->tempDir);
+
     self->baseurl->DeleteURLData(self->baseurl);    
     //self->list->DeleteList(self->list);
     free(self);
@@ -42,60 +38,39 @@ void DeleteHLS(HLS* self)
 int Process(HLS* self)
 {
     int retCode = 0;
-    int folderRet = 0;
-    struct stat buf = {0};
 
-    // Check and create download temp folder
-    if (stat(self->tempDir, &buf) == -1) 
+    Node* node = self->list->head;
+    for(int i = 0; i < self->list->length; i++)
     {
-        // I don't like this type indented style however
-        // it has to one exit point
-        if(folderRet == 0)
-        {
-            Node* node = self->list->head;
-            for(int i = 0; i < self->list->length; i++)
-            {
-                #ifdef DEBUG
-                printf("INPUT: %s --- %s --- %s\n", node->tag, node->attribute, node->value);
-                #endif /* DEBUG */
+        #ifdef DEBUG
+        printf("INPUT: %s --- %s --- %s\n", node->tag, node->attribute, node->value);
+        #endif /* DEBUG */
 
-                if (strstr(EXT_X_VERSION, node->tag) != NULL)
-                    self->version = atoi(node->attribute);
+        if (strstr(EXT_X_VERSION, node->tag) != NULL)
+            self->version = atoi(node->attribute);
 
-                if (strstr(EXT_IS_INDEPENDENT_SEGMENTS, node->tag) != NULL)
-                    self->segmentsDependent = 0;
+        if (strstr(EXT_IS_INDEPENDENT_SEGMENTS, node->tag) != NULL)
+            self->segmentsDependent = 0;
 
-                if (strstr(EXT_X_BITRATE, node->tag) != NULL)
-                    processXBitrate(self, node);
+        if (strstr(EXT_X_BITRATE, node->tag) != NULL)
+            processXBitrate(self, node);
 
-                if (strstr(EXT_X_ENDLIST, node->tag) != NULL)
-                    // TODO finish all
-                    printf("List Ended");
+        if (strstr(EXT_X_ENDLIST, node->tag) != NULL)
+            // TODO finish all
+            printf("List Ended");
 
-                if (strstr(EXT_X_STREAM_INF, node->tag) != NULL)
-                    processXStreamInf(self, node);
-				
-				if (strstr(EXT_X_STREAM_INF, node->tag) != NULL)
-                    processXIFrameStreamInf(self, node);
-				
-				if (strstr(EXT_X_MEDIA, node->tag) != NULL)
-                    processXMedia(self, node);
-					
+        if (strstr(EXT_X_STREAM_INF, node->tag) != NULL)
+            processXStreamInf(self, node);
+        
+        if (strstr(EXT_X_STREAM_INF, node->tag) != NULL)
+            processXIFrameStreamInf(self, node);
+        
+        if (strstr(EXT_X_MEDIA, node->tag) != NULL)
+            processXMedia(self, node);
+            
 
-                // Get next node
-                node = node->next;
-            }
-        }
-        else
-        {
-            retCode = -2; // mkdir error
-            fprintf(stderr, "mkdir error");
-        }
-    }
-    else
-    {
-        retCode = -1; // Temp folder exists
-        fprintf(stderr, "Temp folder exists");
+        // Get next node
+        node = node->next;
     }
 
     return retCode;
@@ -104,9 +79,11 @@ int Process(HLS* self)
 int processXBitrate(HLS* self, Node* node)
 {
     int retCode = 0;
+    struct stat sb;
+    string filepath;
 
     int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength);
+    string url = (string)malloc(urlLength * sizeof(char));
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
     strcat(url, node->value);
@@ -114,12 +91,24 @@ int processXBitrate(HLS* self, Node* node)
     printf("Download: %s\n", url);
     #endif /* DEBUG */
 	
-	string filepath = (string)malloc(strlen(self->tempDir) + strlen(node->value) + 1);
-    strncpy(filepath, self->tempDir, strlen(node->value) + 1);
-    strcat(filepath, node->value);
+    
+    // If tempdir exists
+    if (stat(self->tempDir, &sb) == 0 && S_ISDIR(sb.st_mode)) 
+    {
+        filepath = (string)malloc((strlen(self->tempDir) + strlen(node->value) + 1) * sizeof(char));
+        strncpy(filepath, self->tempDir, strlen(self->tempDir) + 1);
+        strcat(filepath, node->value);
 
-    // Download to temp folder
-    retCode = downloadFile(&url, filepath);
+        // Download to temp folder
+        retCode = downloadFile(&url, filepath);
+    }
+    else
+    {
+        retCode = -1;
+        fprintf(stderr, "Missing temp directory\n");
+    }
+
+    
 	
     // Add to output
     if(retCode == 0)
@@ -139,7 +128,7 @@ int processXStreamInf(HLS* self, Node* node)
     int retCode = 0;
 
     int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength);
+    string url = (string)malloc(urlLength * sizeof(char));
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
     strcat(url, node->value);
@@ -162,7 +151,7 @@ int processXIFrameStreamInf(HLS* self, Node* node)
     int retCode = 0;
 
     int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength);
+    string url = (string)malloc(urlLength * sizeof(char));
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
     strcat(url, node->value);
@@ -185,7 +174,7 @@ int processXMedia(HLS* self, Node* node)
     int retCode = 0;
 
     int urlLength = strlen(self->baseurl->baseurl) + strlen(node->value) + 1;
-    string url = (string)malloc(urlLength);
+    string url = (string)malloc(urlLength * sizeof(char));
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
     strcat(url, node->value);

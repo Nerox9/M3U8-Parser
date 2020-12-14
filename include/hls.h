@@ -26,7 +26,6 @@ typedef struct HLS
     List* iFrameStreams;
 	List* media;
 
-	char tempFolderCreated;
     string tempDir;
 } HLS;
 
