@@ -221,39 +221,82 @@ int processXIFrameStreamInf(HLS* self, Node* node)
 int processXMedia(HLS* self, Node* node)
 {
     int retCode = 0;
-    int urlLength;
-    string attribute;
+    int urlLength = 0;
+    string attribute = NULL;
     string url = NULL;
-    string filename;
-    string type;
+    string temp = NULL;
+    string type = NULL;
 
     // Copy Attribute
-    attribute = (string)malloc(strlen(node->attribute) * sizeof(char));
+    attribute = (string)malloc((strlen(node->attribute) + 1) * sizeof(char));
     memcpy(attribute, node->attribute, strlen(node->attribute) + 1);
 
     // Get TYPE
     type = getAttrib(attribute, "TYPE=", ",");
 
     if(strstr(type, "AUDIO") != NULL)
-        // Get URI
-        filename = getAttrib(attribute, "URI=\"", "\"");
-
-    urlLength = strlen(self->baseurl->baseurl) + strlen(filename) + 1;
-    // TODO: failed but why??
-    url = (string)malloc(urlLength * sizeof(char));
-    memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
-    strcat(url, filename);
-
-    #ifdef DEBUG
-    printf("Media: %s\n", url);
-    #endif /* DEBUG */
-
-    // Add to playlist
-    if(retCode == 0)
 	{
-        node->value = url;
-        Node* tempNode = node->Copy(node);
-		self->media->Add(self->media, tempNode);
+        // Get URI
+        temp = getAttrib(attribute, "URI=\"", "\"");
+
+		urlLength = strlen(self->baseurl->baseurl) + strlen(temp) + 1;
+		url = (string)malloc(urlLength * sizeof(char));
+		memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+		strcat(url, temp);
+
+		#ifdef DEBUG
+		printf("Media: %s\n", url);
+		#endif /* DEBUG */
+
+		// Add to playlist
+		if(retCode == 0)
+		{
+			node->value = url;
+			Node* tempNode = node->Copy(node);
+			self->media->Add(self->media, tempNode);
+		}
+	}
+	else if(strstr(type, "SUBTITLES") != NULL)
+	{
+        // Get URI
+        temp = getAttrib(attribute, "URI=\"", "\"");
+
+		urlLength = strlen(self->baseurl->baseurl) + strlen(temp) + 1;
+		url = (string)malloc(urlLength * sizeof(char));
+		memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
+		strcat(url, temp);
+
+		#ifdef DEBUG
+		printf("Media: %s\n", url);
+		#endif /* DEBUG */
+
+		// Add to playlist
+		if(retCode == 0)
+		{
+			node->value = url;
+			Node* tempNode = node->Copy(node);
+			self->media->Add(self->media, tempNode);
+		}
+	}
+	else if(strstr(type, "CLOSED-CAPTIONS") != NULL)
+	{
+        // Get URI
+        temp = getAttrib(attribute, "INSTREAM-ID=\"", "\"");
+
+		#ifdef DEBUG
+		printf("Media: %s\n", url);
+		#endif /* DEBUG */
+
+		// Set node value to instream-id
+		if(retCode == 0)
+		{
+			node->value = temp;
+		}
+	}
+	else
+	{
+		retCode = -1; // Not Defined Media
+		fprintf(stderr, "Media is not defined");
 	}
 
     return retCode;
@@ -261,7 +304,8 @@ int processXMedia(HLS* self, Node* node)
 
 string getAttrib(string attribs, string attribtag, string endToken)
 {
-    string temp, rest;
+    string temp = NULL;
+	string rest = NULL;
     int tagLen = 0;
     
     temp = (string)malloc((strlen(attribs) + 1) * sizeof(char));

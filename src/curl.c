@@ -55,7 +55,7 @@ int get_data(string* url, string* dataOut)
     responseData_ptr = &data;
 
     data.size = 0;
-    data.data = malloc(4096); /* initial buffer */
+    data.data = (string)malloc(4096); /* initial buffer */
 
     if(NULL == data.data) {
         fprintf(stderr, "Failed to allocate memory.\n");

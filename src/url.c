@@ -21,9 +21,9 @@ URLData* InitURLData(const string url)
 int ParseURL(URLData* self)
 {
     int retCode = 0;
-    string temp;
-    string p;
-    string rest;
+    string temp = NULL;
+    string p = NULL;
+    string rest = NULL;
     
     temp = (string)malloc((strlen(self->baseurl) + 1) * sizeof(char));
     memcpy(temp, self->baseurl, strlen(self->baseurl) + 1);
@@ -58,7 +58,7 @@ string GetBaseURL(string url)
     free(baseURL);
     if(endToken != NULL)
     {
-        baseURL = (string)malloc(pathLen + 1);
+        baseURL = (string)malloc(pathLen + 2);
         memset(baseURL, '\0', pathLen + 1);
         memcpy(baseURL, url, pathLen + 1);
     }

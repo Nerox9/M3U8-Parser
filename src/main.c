@@ -52,7 +52,7 @@ int runHLS(string rawURL, HLS* hls, string out)
 {
     int retCode = 0;
     URLData* url;
-    string dataStr;
+    string dataStr = NULL;
     HLS* variantHLS = NULL;
     HLS* iFrameHLS = NULL;
     HLS* mediaHLS = NULL;
@@ -76,30 +76,45 @@ int runHLS(string rawURL, HLS* hls, string out)
     // Get m3u8 file from URL
     retCode = get_data(&hls->baseurl->url, &dataStr);
 
-    // Parse the m3u8 data
-    retCode = Parse(dataStr, hls);
-    // Parse and download segments
-    retCode = hls->Process(hls, out);
+    // Terrible if condition tree
+    if(retCode == 0)
+    {
+        // Parse the m3u8 data
+        retCode = Parse(dataStr, hls);
+        if (retCode == 0)
+        {
+            // Parse and download segments
+            retCode = hls->Process(hls, out);
 
-    Node* variantNode = hls->variantStreams->head;
-    for(int i = 0; i < hls->variantStreams->length; i++)
-    {
-        runHLS(variantNode->value, variantHLS, out);
-        variantNode = variantNode->next;
-    }
-    
-    Node* iFrameNode = hls->iFrameStreams->head;
-    for(int i = 0; i < hls->iFrameStreams->length; i++)
-    {
-        runHLS(iFrameNode->value, iFrameHLS, out);
-        iFrameNode = iFrameNode->next;
-    }
+            // These processes could be processed in threads and merge each segment when downloaded
+            Node* variantNode = hls->variantStreams->head;
+            for(int i = 0; i < hls->variantStreams->length; i++)
+            {
+                runHLS(variantNode->value, variantHLS, out);
+                variantNode = variantNode->next;
+            }
+            
+            Node* iFrameNode = hls->iFrameStreams->head;
+            for(int i = 0; i < hls->iFrameStreams->length; i++)
+            {
+                runHLS(iFrameNode->value, iFrameHLS, out);
+                iFrameNode = iFrameNode->next;
+            }
 
-    Node* mediaNode = hls->media->head;
-    for(int i = 0; i < hls->media->length; i++)
-    {
-        runHLS(mediaNode->value, mediaHLS, out);
-        mediaNode = mediaNode->next;
+            Node* mediaNode = hls->media->head;
+            for(int i = 0; i < hls->media->length; i++)
+            {
+                runHLS(mediaNode->value, mediaHLS, out);
+                mediaNode = mediaNode->next;
+            }
+
+            /*
+             * Here to merge media parts into one file however,
+             * I have not enough time to make that code exist.
+             * Also if it is threaded, we can call this "void function"
+             * for each segment.
+             */
+        }
     }
 
     return retCode;
