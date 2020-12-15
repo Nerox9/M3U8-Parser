@@ -53,6 +53,9 @@ int runHLS(string rawURL, HLS* hls, string out)
     int retCode = 0;
     URLData* url;
     string dataStr;
+    HLS* variantHLS = NULL;
+    HLS* iFrameHLS = NULL;
+    HLS* mediaHLS = NULL;
 
     // Create url and HLS objects
     url = InitURLData(rawURL);
@@ -78,25 +81,25 @@ int runHLS(string rawURL, HLS* hls, string out)
     // Parse and download segments
     retCode = hls->Process(hls, out);
 
-    Node* node = hls->variantStreams->head;
+    Node* variantNode = hls->variantStreams->head;
     for(int i = 0; i < hls->variantStreams->length; i++)
     {
-        printf("%s\n", node->value);
-        node = node->next;
+        runHLS(variantNode->value, variantHLS, out);
+        variantNode = variantNode->next;
     }
     
-    node = hls->iFrameStreams->head;
+    Node* iFrameNode = hls->iFrameStreams->head;
     for(int i = 0; i < hls->iFrameStreams->length; i++)
     {
-        printf("%s\n", node->value);
-        node = node->next;
+        runHLS(iFrameNode->value, iFrameHLS, out);
+        iFrameNode = iFrameNode->next;
     }
 
-    node = hls->media->head;
+    Node* mediaNode = hls->media->head;
     for(int i = 0; i < hls->media->length; i++)
     {
-        printf("%s\n", node->value);
-        node = node->next;
+        runHLS(mediaNode->value, mediaHLS, out);
+        mediaNode = mediaNode->next;
     }
 
     return retCode;

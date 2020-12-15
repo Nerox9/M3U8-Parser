@@ -51,8 +51,11 @@ string GetBaseURL(string url)
     string endToken;
     string baseURL;
 
-    endToken = strrchr(url, '/');
-    pathLen = strlen(url) - strlen(endToken);
+    baseURL = (string)malloc((strlen(url) + 1) * sizeof(char));
+    memcpy(baseURL, url, strlen(url) + 1);
+    endToken = strrchr(baseURL, '/');
+    pathLen = strlen(baseURL) - strlen(endToken);
+    free(baseURL);
     if(endToken != NULL)
     {
         baseURL = (string)malloc(pathLen + 1);

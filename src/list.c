@@ -18,6 +18,8 @@ Node* CreateNode(string tag, string attribute, string value)
 List* CreateList()
 {
     List* list = (List*) malloc(sizeof(List));
+    list->head = NULL;
+    list->last = NULL;
     list->length = 0;
     list->Add = &Add;
     list->DeleteList = &DeleteList;
@@ -63,7 +65,8 @@ Node* Copy(Node* self)
     newNode->tag = tag;
     newNode->attribute = attribute;
     newNode->value = value;
-	
+    newNode->Copy = &Copy;
+
 	return newNode;
 }
 

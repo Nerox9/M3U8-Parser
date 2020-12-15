@@ -9,7 +9,7 @@ string getAttrib(string, string, string);
 
 HLS* CreateHLS()
 {
-    HLS* hls = (HLS*) malloc(sizeof(hls));
+    HLS* hls = (HLS*) malloc(sizeof(HLS));
     hls->DeleteHLS = &DeleteHLS;
     hls->Process = &Process;
     
@@ -239,6 +239,7 @@ int processXMedia(HLS* self, Node* node)
         filename = getAttrib(attribute, "URI=\"", "\"");
 
     urlLength = strlen(self->baseurl->baseurl) + strlen(filename) + 1;
+    // TODO: failed but why??
     url = (string)malloc(urlLength * sizeof(char));
     memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
     strcat(url, filename);
