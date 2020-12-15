@@ -72,6 +72,9 @@ Node* Copy(Node* self)
 
 void DeleteNode(Node* self)
 {
+    free(self->tag);
+    free(self->attribute);
+    free(self->value);
     free(self);
 }
 
@@ -84,6 +87,7 @@ void DeleteList(List* self)
     {
         temp = head;
         head = head->next;
-        free(temp);
+        DeleteNode(temp);
     }
+    free(self);
 }

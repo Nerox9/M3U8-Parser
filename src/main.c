@@ -40,8 +40,10 @@ int main(int argc, char *argv[])
     {
         retCode = runHLS(rawURL, hls, output);
 
-        printf("\nREMOVE EVERYTHING!!!\n");
-        //clear_data();
+        #ifdef DEBUG
+        printf("\nDELETE EVERYTHING!\n");
+        #endif /* DEBUG */
+        
         hls->DeleteHLS(hls);
 
     }
@@ -85,7 +87,7 @@ int runHLS(string rawURL, HLS* hls, string out)
         {
             // Parse and download segments
             retCode = hls->Process(hls, out);
-
+            return 0;
             // These processes could be processed in threads and merge each segment when downloaded
             Node* variantNode = hls->variantStreams->head;
             for(int i = 0; i < hls->variantStreams->length; i++)

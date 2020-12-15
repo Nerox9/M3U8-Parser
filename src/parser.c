@@ -7,7 +7,8 @@ int Parse(string data, HLS* hls)
 {
     int retCode = 0;
     string format = "#EXTM3U";
-    string line, temp;
+    string line = NULL;
+    string temp = NULL;
     Node* node;
 
     // Get the first line and check format in it

@@ -48,8 +48,8 @@ int ParseURL(URLData* self)
 string GetBaseURL(string url)
 {
     unsigned int pathLen;
-    string endToken;
-    string baseURL;
+    string endToken  = NULL;
+    string baseURL = NULL;
 
     baseURL = (string)malloc((strlen(url) + 1) * sizeof(char));
     memcpy(baseURL, url, strlen(url) + 1);

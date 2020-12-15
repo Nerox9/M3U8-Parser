@@ -31,8 +31,13 @@ void DeleteHLS(HLS* self)
     // Remove temp folder
     rmdir(self->tempDir);
 
-    self->baseurl->DeleteURLData(self->baseurl);    
-    //self->list->DeleteList(self->list);
+    free(self->tempDir);
+    self->baseurl->DeleteURLData(self->baseurl); 
+    
+    self->media->DeleteList(self->media);
+    self->iFrameStreams->DeleteList(self->iFrameStreams);
+    self->iFrameStreams->DeleteList(self->variantStreams);
+    self->list->DeleteList(self->list);
     free(self);
 }
 
@@ -83,8 +88,8 @@ int processXBitrate(HLS* self, Node* node, string out)
     int urlLength = 0;
     string url = NULL;
     struct stat sb;
-    string filepath;
-    string temp;
+    string filepath = NULL;
+    string temp = NULL;
 
     
     // Check the node value is filename or whole url
@@ -313,6 +318,7 @@ string getAttrib(string attribs, string attribtag, string endToken)
     tagLen = strlen(attribtag);
     temp = strstr(temp, attribtag);
     temp += tagLen;
-    strtok_r(temp, endToken, &rest);
+    strtok(temp, endToken);
+    free(rest);
     return temp;
 }
