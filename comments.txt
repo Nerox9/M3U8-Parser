@@ -1,0 +1,5 @@
+In the sample m3u8 streams are downloaded to one file however it is not merged on media payloads.
+There are some memory leakage however it is not handled unfortunately.
+
+There are two build type: make all and make debug.
+"make debug" prints verbose data.

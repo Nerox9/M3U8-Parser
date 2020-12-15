@@ -6,9 +6,9 @@ DEFS =
 SRCDIR = src
 OBJDIR = obj
 
-EXECUTABLE = alyo
+EXECUTABLE = m3u8_downloader.exe
 
-SRCS = $(wildcard $(SRCDIR)/*.c)
+SRCS = $(wildcard $(SRCDIR)/*.c) 
 OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,$(SRCS))
 INCLUDES = -I./include
 	

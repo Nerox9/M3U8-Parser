@@ -36,8 +36,8 @@ void DeleteHLS(HLS* self)
     
     self->media->DeleteList(self->media);
     self->iFrameStreams->DeleteList(self->iFrameStreams);
-    self->iFrameStreams->DeleteList(self->variantStreams);
-    self->list->DeleteList(self->list);
+    self->variantStreams->DeleteList(self->variantStreams);
+    //self->list->DeleteList(self->list);
     free(self);
 }
 

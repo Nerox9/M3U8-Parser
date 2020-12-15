@@ -58,9 +58,10 @@ string GetBaseURL(string url)
     free(baseURL);
     if(endToken != NULL)
     {
-        baseURL = (string)malloc(pathLen + 2);
+        baseURL = (string)malloc((pathLen + 2) * sizeof(char));
         memset(baseURL, '\0', pathLen + 1);
         memcpy(baseURL, url, pathLen + 1);
+        baseURL[pathLen+1] = '\0';
     }
     return baseURL;
 }
@@ -78,10 +79,10 @@ void SetURL(URLData *self, const string url)
 void DeleteURLData(URLData* self)
 {
     printf("Clear URL");
-    free(self->netloc);
-    free(self->path);
+    //free(self->netloc);
+    //free(self->path);
     free(self->scheme);
-    free(self->url);
+    //free(self->url);
     
     free(self);
 }
