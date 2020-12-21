@@ -1,5 +1,5 @@
-#ifndef __alyo_parser_h__
-#define __alyo_parser_h__
+#ifndef __parser_h__
+#define __parser_h__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,4 +11,4 @@
 
 int Parse(string, HLS*);
 
-#endif /* __alyo_parser_h__ */
+#endif /* __parser_h__ */

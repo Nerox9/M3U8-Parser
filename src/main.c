@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     int retCode = 0;
     string rawURL = NULL;
     string output = NULL;
+    HLS* hls = CreateHLS();
 
     #ifdef DEBUG
         rawURL = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8";

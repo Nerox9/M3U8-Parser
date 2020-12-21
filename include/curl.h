@@ -1,5 +1,5 @@
-#ifndef __alyo_curl_h__
-#define __alyo_curl_h__
+#ifndef __curl_h__
+#define __curl_h__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,4 +17,4 @@ int get_data(string*, string*);
 int downloadFile(string*, string);
 void clear_data();
 
-#endif /*__alyo_curl_h__*/
+#endif /*__curl_h__*/

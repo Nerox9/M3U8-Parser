@@ -72,9 +72,9 @@ Node* Copy(Node* self)
 
 void DeleteNode(Node* self)
 {
-    free(self->tag);
-    free(self->attribute);
-    free(self->value);
+    //free(self->tag);
+    //free(self->attribute);
+    //free(self->value);
     free(self);
 }
 

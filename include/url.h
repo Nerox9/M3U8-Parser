@@ -1,5 +1,5 @@
-#ifndef __alyo_url_h__
-#define __alyo_url_h__
+#ifndef __url_h__
+#define __url_h__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,4 +22,4 @@ URLData* InitURLData(const string);
 string GetURL(URLData *);
 void SetURL(URLData *, string);
 
-#endif
+#endif /* __url_h__ */

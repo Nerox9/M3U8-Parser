@@ -1,5 +1,5 @@
-#ifndef __alyo_protocol_h__
-#define __alyo_protocol_h__
+#ifndef __protocol_h__
+#define __protocol_h__
 
 #define EXT_X_TARGETDURATION  "EXT-X-TARGETDURATION"
 #define EXT_X_MEDIA_SEQUENCE  "EXT-X-MEDIA-SEQUENCE"
@@ -37,4 +37,4 @@
 #define EXT_X_GAP  "EXT-X-GAP"
 #define EXT_X_BITRATE  "EXT-X-BITRATE"
 
-#endif /* __alyo_protocol_h__ */
+#endif /* __protocol_h__ */

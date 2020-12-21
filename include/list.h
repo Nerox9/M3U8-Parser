@@ -1,5 +1,5 @@
-#ifndef __alyo_list_h__
-#define __alyo_list_h__
+#ifndef __list_h__
+#define __list_h__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,4 +31,4 @@ List* CreateList();
 int Add(List*, Node*);
 void DeleteList(List*);
 
-#endif /* __alyo_list_h__ */
+#endif /* __list_h__ */

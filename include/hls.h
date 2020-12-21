@@ -1,5 +1,5 @@
-#ifndef __alyo_hls_h__
-#define __alyo_hls_h__
+#ifndef __hls_h__
+#define __hls_h__
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -32,4 +32,4 @@ typedef struct HLS
 HLS* CreateHLS();
 void DeleteHLS(HLS*);
 
-#endif /* __alyo_hls_h__ */
+#endif /* __hls_h__ */

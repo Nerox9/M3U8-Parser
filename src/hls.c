@@ -23,6 +23,7 @@ HLS* CreateHLS()
     string template = (string)malloc(19 * sizeof(char));
 	strncpy(template, "/tmp/tempdirXXXXXX", 19);
     hls->tempDir = mkdtemp(template);
+    free(template);
     return hls;
 }
 
@@ -31,13 +32,13 @@ void DeleteHLS(HLS* self)
     // Remove temp folder
     rmdir(self->tempDir);
 
-    free(self->tempDir);
-    self->baseurl->DeleteURLData(self->baseurl); 
+    //free(self->tempDir);
+    //self->baseurl->DeleteURLData(self->baseurl); 
     
     self->media->DeleteList(self->media);
     self->iFrameStreams->DeleteList(self->iFrameStreams);
     self->variantStreams->DeleteList(self->variantStreams);
-    //self->list->DeleteList(self->list);
+    self->list->DeleteList(self->list);
     free(self);
 }
 
@@ -99,7 +100,7 @@ int processXBitrate(HLS* self, Node* node, string out)
         url = (string)malloc(urlLength * sizeof(char));
         memcpy(url, self->baseurl->baseurl, strlen(self->baseurl->baseurl) + 1);
 
-        
+
         strcat(url, node->value);
     }
 
